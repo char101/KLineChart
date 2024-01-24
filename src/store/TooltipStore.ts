@@ -20,6 +20,9 @@ import { isNumber } from '../common/utils/typeChecks'
 
 import type ChartStore from './ChartStore'
 
+import { PaneIdConstants } from '../pane/types'
+import { getFraction } from '../utils'
+
 export interface TooltipIcon {
   paneId: string
   indicatorName: string
@@ -57,6 +60,18 @@ export default class TooltipStore {
     } else {
       realDataIndex = dataList.length - 1
       dataIndex = realDataIndex
+    }
+    // Adjust cr.y to nearest fraction
+    if (cr.paneId === PaneIdConstants.CANDLE && cr.y !== undefined) {
+      const pane = this._chartStore.getChart().getDrawPaneById(PaneIdConstants.CANDLE)
+      if (pane !== null) {
+        const yAxis = pane.getAxisComponent()
+        const price = yAxis.convertFromPixel(cr.y)
+        const fraction = getFraction(price)
+        const value = Math.round(price / fraction) * fraction
+        cr.y = yAxis.convertToPixel(value)
+        cr.value = value // for CroshairHorizontalLabelView
+      }
     }
     const kLineData: Nullable<KLineData> = dataList[dataIndex]
     const realX = this._chartStore.getTimeScaleStore().dataIndexToCoordinate(realDataIndex)

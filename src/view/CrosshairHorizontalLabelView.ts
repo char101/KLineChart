@@ -64,7 +64,7 @@ export default class CrosshairHorizontalLabelView<C extends Axis = YAxis> extend
 
   protected getText (crosshair: Crosshair, chartStore: ChartStore, axis: Axis): string {
     const yAxis = axis as unknown as YAxis
-    const value = axis.convertFromPixel(crosshair.y!)
+    const value = crosshair.value || axis.convertFromPixel(crosshair.y!)
     let text: string
     if (yAxis.getType() === YAxisType.Percentage) {
       const fromData = chartStore.getVisibleFirstData()
