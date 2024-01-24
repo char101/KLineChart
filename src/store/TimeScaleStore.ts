@@ -402,7 +402,22 @@ export default class TimeScaleStore {
     const x = zoomCoordinate!.x!
     const floatIndex = this.coordinateToFloatIndex(x)
     const prevBarSpace = this._barSpace
-    const barSpace = this._barSpace + scale * (this._barSpace / SCALE_MULTIPLIER)
+    // const barSpace = this._barSpace + scale * (this._barSpace / SCALE_MULTIPLIER)
+    // custom zoom
+    let barSpace = this._barSpace
+    if (scale > 0) {
+      if (barSpace < 5) barSpace = 5;
+      else if (barSpace < 10) barSpace = 10;
+      else if (barSpace < 20) barSpace = 20;
+      else if (barSpace < 40) barSpace = 40;
+      else barSpace = 80;
+    } else {
+      if (barSpace > 80) barSpace = 80;
+      if (barSpace > 40) barSpace = 40;
+      else if (barSpace > 20) barSpace = 20;
+      else if (barSpace > 10) barSpace = 10;
+      else barSpace = 5;
+    }
     this.setBarSpace(barSpace, () => {
       this._lastBarRightSideDiffBarCount += (floatIndex - this.coordinateToFloatIndex(x))
     })
