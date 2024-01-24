@@ -54,6 +54,6 @@ export default class CrosshairVerticalLabelView extends CrosshairHorizontalLabel
     } else {
       optimalX = x
     }
-    return { x: optimalX, y: 0, text, align, baseline: 'top' }
+    return { x: optimalX, y: 1, text, align, baseline: 'top' }
   }
 }
