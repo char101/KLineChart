@@ -21,4 +21,5 @@ export default interface Crosshair extends Partial<Coordinate> {
   kLineData?: KLineData
   dataIndex?: number
   realDataIndex?: number
+  value?: number
 }
