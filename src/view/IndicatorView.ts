@@ -157,9 +157,9 @@ export default class IndicatorView extends CandleBarView {
                         y = valueY
                       }
                       attrs = {
-                        x: x - halfGapBar,
+                        x: x - (figure.width ? figure.width / 2 : halfGapBar),
                         y,
-                        width: gapBar,
+                        width: figure.width ?? gapBar,
                         height
                       }
                       break

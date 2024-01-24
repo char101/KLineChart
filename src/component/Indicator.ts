@@ -72,8 +72,9 @@ export interface IndicatorFigure<D = any> {
   title?: string
   type?: string
   baseValue?: number
+  width?: number // custom bar width
   attrs?: IndicatorFigureAttrsCallback<D>
-  styles?: IndicatorFigureStylesCallback<D>
+  styles?: IndicatorFigureStylesCallback<D> | IndicatorFigureStyle
 }
 
 export type IndicatorRegenerateFiguresCallback<D = any> = (calcParams: any[]) => Array<IndicatorFigure<D>>
@@ -274,7 +275,7 @@ export function eachFigures<D> (
         current: { kLineData: kLineDataList[dataIndex], indicatorData: result[dataIndex] },
         next: { kLineData: kLineDataList[dataIndex + 1], indicatorData: result[dataIndex + 1] }
       }
-      const ss = figure.styles?.(cbData, indicator, defaultStyles)
+      const ss = figure.styles ? (typeof figure.styles === 'function' ? figure.styles(cbData, indicator, defaultStyles) : figure.styles) : null
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       eachFigureCallback(figure, { ...defaultFigureStyles, ...ss }, figureIndex)
     }
@@ -314,7 +315,7 @@ export default abstract class IndicatorImp<D = any> implements Indicator<D> {
     this.name = name
     this.shortName = shortName ?? name
     this.series = series ?? IndicatorSeries.Normal
-    this.precision = precision ?? 4
+    this.precision = precision ?? 2
     this.calcParams = calcParams ?? []
     this.figures = figures ?? []
     this.shouldOhlc = shouldOhlc ?? false
@@ -404,7 +405,7 @@ export default abstract class IndicatorImp<D = any> implements Indicator<D> {
 
   setExtendData (extendData: any): boolean {
     if (this.extendData !== extendData) {
-      this.extendData = extendData
+      this.extendData = {...this.extendData, ...extendData}
       return true
     }
     return false
@@ -464,6 +465,7 @@ export default abstract class IndicatorImp<D = any> implements Indicator<D> {
       this.result = result
       return true
     } catch (e) {
+      console.error(e);
       return false
     }
   }
