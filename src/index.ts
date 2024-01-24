@@ -1,4 +1,4 @@
-/**
+﻿﻿/**
  *       ___           ___                   ___           ___           ___           ___           ___           ___           ___
  *      /\__\         /\__\      ___        /\__\         /\  \         /\  \         /\__\         /\  \         /\  \         /\  \
  *     /:/  /        /:/  /     /\  \      /::|  |       /::\  \       /::\  \       /:/  /        /::\  \       /::\  \        \:\  \
@@ -62,6 +62,9 @@ import { registerOverlay, getOverlayClass, getSupportedOverlays } from './extens
 import { registerStyles } from './extension/styles/index'
 import { registerXAxis } from './extension/x-axis'
 import { registerYAxis } from './extension/y-axis'
+
+import { getFraction, roundPrice } from './utils'
+import { binarySearchNearest } from './common/utils/number'
 
 const instances = new Map<string, ChartImp>()
 let chartBaseId = 1
@@ -160,7 +163,10 @@ const utils = {
   drawPolygon,
   drawRect,
   drawText,
-  drawRectText
+  drawRectText,
+  getFraction,
+  roundPrice,
+  binarySearchNearest
 }
 
 export {
