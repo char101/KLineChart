@@ -257,7 +257,14 @@ export enum CandleType {
   CandleUpStroke = 'candle_up_stroke',
   CandleDownStroke = 'candle_down_stroke',
   Ohlc = 'ohlc',
-  Area = 'area'
+  Area = 'area',
+  Stacked = 'stacked',
+  Hlc = 'hlc',
+  Hlc2 = 'hlc2',
+  Line = 'line',
+  Line3 = 'line3',
+  Shade3 = 'shade3',
+  PnF = 'pnf' // point and figure, box size = 1 fraction, reverse = 3 box
 }
 
 export interface CandleBarColor extends ChangeColor {
