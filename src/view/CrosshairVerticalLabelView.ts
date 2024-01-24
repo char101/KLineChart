@@ -37,7 +37,27 @@ export default class CrosshairVerticalLabelView extends CrosshairHorizontalLabel
   }
 
   override getText (crosshair: Crosshair, chartStore: ChartStore): string {
+    return this._getText(crosshair, chartStore)
     const timestamp = crosshair.kLineData?.timestamp
+    return chartStore.getCustomApi().formatDate(chartStore.getTimeScaleStore().getDateTimeFormat(), timestamp!, 'YYYY-MM-DD HH:mm', FormatDateType.Crosshair)
+  }
+
+  private _getText (crosshair: Crosshair, chartStore: ChartStore): string {
+    const timestamp = crosshair.kLineData?.timestamp
+    const date = new Date(timestamp)
+    switch (api.interval) {
+      case '1d':
+        return date.toLocaleString('default', {day: 'numeric', month: 'short', year: 'numeric'})
+      case '5m':
+      case '10m':
+      case '15m':
+        return `${date.toLocaleString('default', {timeStyle: 'short'})}`
+      case '30m':
+      case '1h':
+      case '2h':
+      case '3h':
+        return `${date.toLocaleString('default', {dateStyle: 'medium', timeStyle: 'short'})}`
+    }
     return chartStore.getCustomApi().formatDate(chartStore.getTimeScaleStore().getDateTimeFormat(), timestamp!, 'YYYY-MM-DD HH:mm', FormatDateType.Crosshair)
   }
 
