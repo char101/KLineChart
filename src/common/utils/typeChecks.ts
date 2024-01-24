@@ -27,7 +27,7 @@ export function merge (target: any, source: any): void {
         merge(targetProp, sourceProp)
       } else {
         if (isValid(source[key])) {
-          target[key] = clone(source[key])
+          target[key] = source[key]
         }
       }
     }
@@ -35,27 +35,31 @@ export function merge (target: any, source: any): void {
 }
 
 export function clone<T> (target: T): T {
-  if (!isObject(target)) {
-    return target
-  }
+  try {
+    return structuredClone(target)
+  } catch (err) {
+    if (!isObject(target)) {
+      return target
+    }
 
-  let copy
-  if (isArray(target)) {
-    copy = []
-  } else {
-    copy = {}
-  }
-  for (const key in target) {
-    if (Object.prototype.hasOwnProperty.call(target, key) as boolean) {
-      const v = target[key]
-      if (isObject(v)) {
-        copy[key] = clone(v)
-      } else {
-        copy[key] = v
+    let copy
+    if (isArray(target)) {
+      copy = []
+    } else {
+      copy = {}
+    }
+    for (const key in target) {
+      if (Object.prototype.hasOwnProperty.call(target, key) as boolean) {
+        const v = target[key]
+        if (isObject(v)) {
+          copy[key] = clone(v)
+        } else {
+          copy[key] = v
+        }
       }
     }
+    return copy
   }
-  return copy
 }
 
 export function isArray<T = any> (value: any): value is T[] {
