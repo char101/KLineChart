@@ -69,6 +69,9 @@ export type EventName = keyof EventHandler
 export interface MouseTouchEvent extends Coordinate {
   pageX: number
   pageY: number
+  altKey: boolean
+  ctrlKey: boolean
+  shiftKey: boolean
   isTouch?: boolean
   preventDefault?: () => void
 }
@@ -844,15 +847,16 @@ export default class SyntheticEvent {
   }
 
   private _firesTouchEvents (e: MouseEvent): boolean {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-expect-error
-    if (isValid(e.sourceCapabilities?.firesTouchEvents)) {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-expect-error
-      return e.sourceCapabilities.firesTouchEvents
-    }
-
-    return this._eventTimeStamp(e) < this._lastTouchEventTimeStamp + Delay.PreventFiresTouchEvents
+    return false
+    // // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // // @ts-expect-error
+    // if (isValid(e.sourceCapabilities?.firesTouchEvents)) {
+    //   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //   // @ts-expect-error
+    //   return e.sourceCapabilities.firesTouchEvents
+    // }
+    //
+    // return this._eventTimeStamp(e) < this._lastTouchEventTimeStamp + Delay.PreventFiresTouchEvents
   }
 
   private _processEvent (event: MouseTouchEvent, callback?: MouseTouchEventCallback): void {
@@ -871,6 +875,10 @@ export default class SyntheticEvent {
       pageX: eventLike.pageX,
       pageY: eventLike.pageY,
       isTouch: !event.type.startsWith('mouse') && event.type !== 'contextmenu' && event.type !== 'click' && event.type !== 'wheel',
+
+      altKey: eventLike.altKey,
+      ctrlKey: eventLike.ctrlKey,
+      shiftKey: eventLike.shiftKey,
 
       preventDefault: () => {
         if (event.type !== 'touchstart') {
