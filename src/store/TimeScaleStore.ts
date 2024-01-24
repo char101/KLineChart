@@ -124,9 +124,13 @@ export default class TimeScaleStore {
   }
 
   private _calcGapBarSpace (): number {
-    const rateSpace = Math.floor(this._barSpace * 0.82)
+    const rateSpace = Math.floor(this._barSpace * 0.8)
     const floorSpace = Math.floor(this._barSpace)
-    const optimalSpace = Math.min(rateSpace, floorSpace - 1)
+    let optimalSpace = Math.min(rateSpace, floorSpace - 1)
+    // If the optimal space is an odd number halfGapBar will be x.5, which will cause blur fix to fail
+    if (optimalSpace % 2 !== 0) {
+      optimalSpace -= 1
+    }
     return Math.max(1, optimalSpace)
   }
 
@@ -382,7 +386,15 @@ export default class TimeScaleStore {
     this._chartStore.getActionStore().execute(ActionType.OnZoom)
     const x = zoomCoordinate!.x!
     const floatIndex = this.coordinateToFloatIndex(x)
-    const barSpace = this._barSpace + scale * (this._barSpace / 10)
+    // const barSpace = this._barSpace + scale * (this._barSpace / 10)
+    // custom zoom
+    const upStep = this._barSpace >= 5 ? 5 : 1
+    const downStep = this._barSpace > 5 ? -5 : -1
+    let barSpace = this._barSpace + (scale > 0 ? upStep : downStep)
+    if (barSpace < 1)
+      barSpace = 1
+    else if (barSpace > 50)
+      barSpace = 50
     this.setBarSpace(barSpace, () => {
       this._lastBarRightSideDiffBarCount += (floatIndex - this.coordinateToFloatIndex(x))
     })
