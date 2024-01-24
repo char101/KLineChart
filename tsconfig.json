@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "strictNullChecks": true,
-    "target": "ES5",
+    "target": "esnext",
     "esModuleInterop": true,
     "downlevelIteration": true,
     "noFallthroughCasesInSwitch": true,
@@ -9,9 +9,10 @@
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "experimentalDecorators": true,
+    "useDefineForClassFields": false,
     "lib": [
       "dom",
-      "es2018"
+      "ESNext"
     ]
   },
   "include": [
