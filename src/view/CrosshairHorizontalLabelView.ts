@@ -97,7 +97,7 @@ export default class CrosshairHorizontalLabelView<C extends Axis = YAxis> extend
     let x: number
     let textAlign: CanvasTextAlign
     if (yAxis.isFromZero()) {
-      x = 0
+      x = 1
       textAlign = 'left'
     } else {
       x = bounding.width
