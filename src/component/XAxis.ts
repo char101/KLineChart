@@ -40,6 +40,7 @@ export default abstract class XAxisImp extends AxisImp {
   }
 
   protected optimalTicks (ticks: AxisTick[]): AxisTick[] {
+    return this._optimalTicks(ticks)
     const chart = this.getParent().getChart()
     const chartStore = chart.getChartStore()
     const formatDate = chartStore.getCustomApi().formatDate
@@ -93,6 +94,102 @@ export default abstract class XAxisImp extends AxisImp {
         } else {
           optimalTicks[0].text = this._optimalTickLabel(formatDate, dateTimeFormat, firstTimestamp, secondTimestamp) ?? optimalTicks[0].text
         }
+      }
+    }
+    return optimalTicks
+  }
+
+  private _optimalTicks (ticks: AxisTick[]): AxisTick[] {
+    const data = this.getParent().getChart().getDataList()
+    const { realFrom, realTo } = this.getRange()
+    const optimalTicks: AxisTick[] = []
+    const interval = (window as any).api?.interval || '1d'
+    const timeScaleStore = this.getParent().getChart().getChartStore().getTimeScaleStore()
+    const barSpace = timeScaleStore.getBarSpace()
+    const {halfBar} = barSpace;
+    switch (interval) {
+      case '5m':
+      case '10m':
+      case '15m':
+      case '30m':
+      case '1h':
+      {
+        let prevMonth = null;
+        let prevDay = null;
+        for (let i = realFrom; i <= realTo; ++i) {
+          const row = data[i]
+          const dt = new Date(row.timestamp)
+          const day = dt.getDate()
+          const month = dt.getMonth()
+          if (day !== prevDay) {
+            optimalTicks.push({
+              text: month === prevMonth ? `${day}` : `${dt.toLocaleString('default', {month: 'short'})} ${day}`,
+              coord: this.convertToPixel(i) - halfBar, // for intraday grid, draw between the days
+              value: i
+            })
+          }
+          prevDay = day
+          prevMonth = month
+        }
+        break
+      }
+      case '2h':
+      case '3h':
+      {
+        let prevWeek = null
+        let prevMonth = null
+        for (let i = realFrom; i <= realTo; ++i) {
+          const row = data[i]
+          const week = row.week
+          const dt = new Date(row.timestamp)
+          const month = dt.getMonth()
+          if (week !== prevWeek) {
+            optimalTicks.push({
+              text: month === prevMonth ? `${dt.getDate()}` : `${dt.getDate()} ${dt.toLocaleString('default', {month: 'short'})}`,
+              coord: this.convertToPixel(i),
+              value: i
+            })
+          }
+          prevWeek = week
+          prevMonth = month
+        }
+        break
+      }
+      case '1d':
+        {
+        let prevMonth = null;
+        let prevYear = null;
+        for (let i = realFrom; i <= realTo; ++i) {
+          const row = data[i]
+          const dt = new Date(row.timestamp)
+          const month = dt.getMonth()
+          const year = dt.getFullYear()
+          const shortMonth = dt.toLocaleString('default', {month: 'short'})
+          if (prevMonth !== month) {
+            optimalTicks.push({
+              text: year === prevYear ? shortMonth : `${dt.getFullYear()}`,
+              coord: this.convertToPixel(i), value: i
+            })
+          }
+          prevMonth = month
+          prevYear = year
+        }
+        break
+      }
+      case '1w':
+      case '1mo':
+      {
+        let prevYear = null;
+        for (let i = realFrom; i <= realTo; ++i) {
+          const row = data[i]
+          const dt = new Date(row.timestamp)
+          const year = dt.getFullYear()
+          if (year !== prevYear) {
+            optimalTicks.push({text: `${year}`, coord: this.convertToPixel(i), value: i})
+          }
+          prevYear = year
+        }
+        break
       }
     }
     return optimalTicks
