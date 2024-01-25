@@ -136,9 +136,9 @@ export default abstract class YAxisImp extends AxisImp implements YAxis {
         break
       }
       case YAxisType.Log: {
-        min = log10(min)
-        max = log10(max)
-        dif = 0.05 * index10(-precision)
+        min = min > 0 ? log10(min) : 0
+        max = max > 0 ? log10(max) : 10
+        dif = 0.01 * index10(-precision)
         break
       }
       default: {
