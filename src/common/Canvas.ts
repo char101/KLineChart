@@ -96,7 +96,7 @@ export default class Canvas {
       this._pixelHeight = this._nextPixelHeight
       this._element.width = this._nextPixelWidth
       this._element.height = this._nextPixelHeight
-      this._ctx.scale(horizontalPixelRatio, verticalPixelRatio)
+      // this._ctx.scale(horizontalPixelRatio, verticalPixelRatio)
     })
   }
 
