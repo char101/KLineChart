@@ -63,7 +63,7 @@ export default class IndicatorTooltipView extends View<YAxis> {
       const defaultStyles = chartStore.getStyles().indicator
       const { offsetLeft, offsetTop, offsetRight } = defaultStyles.tooltip
       this.drawIndicatorTooltip(
-        ctx, pane.getId(), chartStore.getDataList(),
+        ctx, pane, chartStore.getDataList(),
         crosshair, activeIcon, indicators, customApi,
         thousandsSeparator, decimalFoldThreshold,
         offsetLeft, offsetTop,
@@ -74,7 +74,7 @@ export default class IndicatorTooltipView extends View<YAxis> {
 
   protected drawIndicatorTooltip (
     ctx: CanvasRenderingContext2D,
-    paneId: string,
+    pane: Pane,
     dataList: KLineData[],
     crosshair: Crosshair,
     activeTooltipIcon: Nullable<TooltipIcon>,
@@ -87,6 +87,7 @@ export default class IndicatorTooltipView extends View<YAxis> {
     maxWidth: number,
     styles: IndicatorStyle
   ): number {
+    const paneId = pane.getId()
     const tooltipStyles = styles.tooltip
     if (this.isDrawTooltip(crosshair, tooltipStyles)) {
       const tooltipTextStyles = tooltipStyles.text
@@ -118,7 +119,7 @@ export default class IndicatorTooltipView extends View<YAxis> {
                   value: { text, color: tooltipTextStyles.color }
                 }
               ],
-              coordinate, left, prevRowHeight, maxWidth, tooltipTextStyles
+              coordinate, left, prevRowHeight, maxWidth, tooltipTextStyles, pane, indicator
             )
           }
 
@@ -131,7 +132,7 @@ export default class IndicatorTooltipView extends View<YAxis> {
           if (legendValid) {
             prevRowHeight = this.drawStandardTooltipLegends(
               ctx, legends, coordinate,
-              left, prevRowHeight, maxWidth, tooltipStyles.text
+              left, prevRowHeight, maxWidth, tooltipStyles.text, pane, indicator
             )
           }
 
@@ -217,7 +218,9 @@ export default class IndicatorTooltipView extends View<YAxis> {
     left: number,
     prevRowHeight: number,
     maxWidth: number,
-    styles: TooltipTextStyle
+    styles: TooltipTextStyle,
+    pane: Pane,
+    indicator: IndicatorImp
   ): number {
     if (legends.length > 0) {
       const { marginLeft, marginTop, marginRight, marginBottom, size, family, weight } = styles
@@ -246,7 +249,13 @@ export default class IndicatorTooltipView extends View<YAxis> {
         this.createFigure({
           name: 'text',
           attrs: { x: coordinate.x + marginLeft + titleTextWidth, y: coordinate.y + marginTop, text: value.text },
-          styles: { color: value.color, size, family, weight }
+          styles: { color: (!indicator || indicator.visible) ? value.color : '#888888', size, family, weight }
+        }, {
+          mouseClickEvent: () => {
+            if (pane && pane.getId() == 'candle_pane') {
+              pane.getChart().overrideIndicator({name: indicator.name, visible: !indicator.visible}, pane.getId())
+            }
+          }
         })?.draw(ctx)
         coordinate.x += (marginLeft + totalTextWidth + marginRight)
       })
@@ -283,7 +292,7 @@ export default class IndicatorTooltipView extends View<YAxis> {
     const result = indicator.result ?? []
 
     const legends: TooltipLegend[] = []
-    if (indicator.visible) {
+    // if (indicator.visible) {
       const indicatorData = result[dataIndex] ?? {}
       eachFigures(dataList, indicator, dataIndex, styles, (figure: IndicatorFigure, figureStyles: Required<IndicatorFigureStyle>) => {
         if (isString(figure.title)) {
@@ -299,7 +308,7 @@ export default class IndicatorTooltipView extends View<YAxis> {
         }
       })
       tooltipData.values = legends
-    }
+    // }
 
     if (indicator.createTooltipDataSource !== null) {
       const widget = this.getWidget()

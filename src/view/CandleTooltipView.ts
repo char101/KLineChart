@@ -66,7 +66,7 @@ export default class CandleTooltipView extends IndicatorTooltipView {
         const isDrawCandleTooltip = this.isDrawTooltip(crosshair, candleStyles.tooltip)
         const isDrawIndicatorTooltip = this.isDrawTooltip(crosshair, indicatorStyles.tooltip)
         this._drawRectTooltip(
-          ctx, dataList, indicators,
+          ctx, pane, dataList, indicators,
           bounding, yAxisBounding,
           crosshair, precision,
           dateTimeFormat, locale, customApi, thousandsSeparator, decimalFoldThreshold,
@@ -85,7 +85,7 @@ export default class CandleTooltipView extends IndicatorTooltipView {
           offsetLeft, offsetTop, maxWidth, candleStyles
         )
         this.drawIndicatorTooltip(
-          ctx, paneId, dataList, crosshair,
+          ctx, pane, dataList, crosshair,
           activeIcon, indicators, customApi,
           thousandsSeparator, decimalFoldThreshold,
           offsetLeft, top, maxWidth, indicatorStyles
@@ -97,14 +97,14 @@ export default class CandleTooltipView extends IndicatorTooltipView {
         const { offsetLeft, offsetTop, offsetRight } = candleStyles.tooltip
         const maxWidth = bounding.width - offsetRight
         const top = this.drawIndicatorTooltip(
-          ctx, paneId, dataList, crosshair,
+          ctx, pane, dataList, crosshair,
           activeIcon, indicators, customApi,
           thousandsSeparator, decimalFoldThreshold,
           offsetLeft, offsetTop, maxWidth, indicatorStyles
         )
         const isDrawCandleTooltip = this.isDrawTooltip(crosshair, candleStyles.tooltip)
         this._drawRectTooltip(
-          ctx, dataList, indicators,
+          ctx, pane, dataList, indicators,
           bounding, yAxisBounding,
           crosshair, precision, dateTimeFormat,
           locale, customApi, thousandsSeparator, decimalFoldThreshold,
@@ -120,7 +120,7 @@ export default class CandleTooltipView extends IndicatorTooltipView {
         )
         const isDrawIndicatorTooltip = this.isDrawTooltip(crosshair, indicatorStyles.tooltip)
         this._drawRectTooltip(
-          ctx, dataList, indicators,
+          ctx, pane, dataList, indicators,
           bounding, yAxisBounding,
           crosshair, precision, dateTimeFormat,
           locale, customApi, thousandsSeparator, decimalFoldThreshold,
@@ -187,6 +187,7 @@ export default class CandleTooltipView extends IndicatorTooltipView {
 
   private _drawRectTooltip (
     ctx: CanvasRenderingContext2D,
+    pane: Pane,
     dataList: KLineData[],
     indicators: Indicator[],
     bounding: Bounding,
@@ -382,7 +383,9 @@ export default class CandleTooltipView extends IndicatorTooltipView {
         if (isDrawIndicatorTooltip) {
           // render indicator texts
           const indicatorTextX = rectX + rectBorderSize + rectPaddingLeft + indicatorTextMarginLeft
+          let i = 0
           indicatorLegendsArray.forEach(legends => {
+            const indicator = indicators[i++]
             legends.forEach(data => {
               textY += indicatorTextMarginTop
               const title = data.title as TooltipLegendChild
@@ -395,10 +398,17 @@ export default class CandleTooltipView extends IndicatorTooltipView {
                   text: title.text
                 },
                 styles: {
-                  color: title.color,
+                  color: indicator.visible ? '#BBBBBB' : '#888888',
                   size: indicatorTextSize,
                   family: indicatorTextFamily,
                   weight: indicatorTextWeight
+                },
+              }, {
+                mouseClickEvent: () => {
+                  console.log('click')
+                  if (pane && pane.getId() == 'candle_pane') {
+                    pane.getChart().overrideIndicator({name: indicator.name, visible: !indicator.visible}, pane.getId())
+                  }
                 }
               })?.draw(ctx)
 
@@ -411,10 +421,17 @@ export default class CandleTooltipView extends IndicatorTooltipView {
                   align: 'right'
                 },
                 styles: {
-                  color: value.color,
+                  color: indicator.visible ? value.color : '#888888',
                   size: indicatorTextSize,
                   family: indicatorTextFamily,
                   weight: indicatorTextWeight
+                }
+              }, {
+                mouseClickEvent: () => {
+                  console.log('click')
+                  if (pane && pane.getId() == 'candle_pane') {
+                    pane.getChart().overrideIndicator({name: indicator.name, visible: !indicator.visible}, pane.getId())
+                  }
                 }
               })?.draw(ctx)
               textY += (indicatorTextSize + indicatorTextMarginBottom)
