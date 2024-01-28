@@ -82,7 +82,7 @@ export default class CandleTooltipView extends IndicatorTooltipView {
           dateTimeFormat, locale, customApi, thousandsSeparator, decimalFoldThreshold, candleStyles
         )
         this.drawIndicatorTooltip(
-          ctx, paneId, dataList, crosshair,
+          ctx, pane, dataList, crosshair,
           activeIcon, indicators, customApi,
           thousandsSeparator, decimalFoldThreshold,
           bounding, indicatorStyles, top
@@ -92,7 +92,7 @@ export default class CandleTooltipView extends IndicatorTooltipView {
         indicatorStyles.tooltip.showType === TooltipShowType.Standard
       ) {
         const top = this.drawIndicatorTooltip(
-          ctx, paneId, dataList, crosshair,
+          ctx, pane, dataList, crosshair,
           activeIcon, indicators, customApi,
           thousandsSeparator, decimalFoldThreshold,
           bounding, indicatorStyles, 0

@@ -62,7 +62,7 @@ export default class IndicatorTooltipView extends View<YAxis> {
       const activeIcon = chartStore.getTooltipStore().getActiveIcon()
       const defaultStyles = chartStore.getStyles().indicator
       this.drawIndicatorTooltip(
-        ctx, pane.getId(), chartStore.getDataList(),
+        ctx, pane, chartStore.getDataList(),
         crosshair, activeIcon, indicators, customApi,
         thousandsSeparator, decimalFoldThreshold, bounding, defaultStyles
       )
@@ -71,7 +71,7 @@ export default class IndicatorTooltipView extends View<YAxis> {
 
   protected drawIndicatorTooltip (
     ctx: CanvasRenderingContext2D,
-    paneId: string,
+    pane: Pane,
     dataList: KLineData[],
     crosshair: Crosshair,
     activeTooltipIconInfo: Nullable<TooltipIcon>,
@@ -83,6 +83,7 @@ export default class IndicatorTooltipView extends View<YAxis> {
     styles: IndicatorStyle,
     top?: number
   ): number {
+    const paneId = pane.getId()
     const tooltipStyles = styles.tooltip
     let height = 0
     if (this.isDrawTooltip(crosshair, tooltipStyles)) {
@@ -119,7 +120,9 @@ export default class IndicatorTooltipView extends View<YAxis> {
               x,
               y,
               prevRowHeight,
-              tooltipTextStyles
+              tooltipTextStyles,
+              pane,
+              indicator
             )
             x = nameStartX
             y = nameStartY
@@ -231,7 +234,9 @@ export default class IndicatorTooltipView extends View<YAxis> {
     startX: number,
     startY: number,
     prevRowHeight: number,
-    styles: TooltipTextStyle
+    styles: TooltipTextStyle,
+    pane: Pane,
+    indicator: IndicatorImp
   ): [number, number, number, number] {
     let x = startX
     let y = startY
@@ -269,7 +274,13 @@ export default class IndicatorTooltipView extends View<YAxis> {
         this.createFigure({
           name: 'text',
           attrs: { x, y: y + marginTop, text: value.text },
-          styles: { color: value.color, size, family, weight }
+          styles: { color: (!indicator || indicator.visible) ? value.color : '#888888', size, family, weight }
+        }, {
+          mouseClickEvent: () => {
+            if (pane && pane.getId() == 'candle_pane') {
+              pane.getChart().overrideIndicator({name: indicator.name, visible: !indicator.visible}, pane.getId())
+            }
+          }
         })?.draw(ctx)
         x += (valueTextWidth + marginRight)
       })
