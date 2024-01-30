@@ -331,54 +331,55 @@ export default abstract class YAxisImp extends AxisImp implements YAxis {
         yAxisWidth += (yAxisStyles.tickText.marginStart + yAxisStyles.tickText.marginEnd + textWidth)
       }
     }
-    const crosshairStyles = styles.crosshair
-    let crosshairVerticalTextWidth = 0
-    if (
-      crosshairStyles.show &&
-      crosshairStyles.horizontal.show &&
-      crosshairStyles.horizontal.text.show
-    ) {
-      const indicators = chartStore.getIndicatorStore().getInstances(pane.getId())
-      let techPrecision = 0
-      let shouldFormatBigNumber = false
-      indicators.forEach(tech => {
-        techPrecision = Math.max(tech.precision, techPrecision)
-        if (!shouldFormatBigNumber) {
-          shouldFormatBigNumber = tech.shouldFormatBigNumber
-        }
-      })
-      let precision = 2
-      if (this.getType() !== YAxisType.Percentage) {
-        if (this.isInCandle()) {
-          const { price: pricePrecision } = chartStore.getPrecision()
-          const lastValueMarkStyles = styles.indicator.lastValueMark
-          if (lastValueMarkStyles.show && lastValueMarkStyles.text.show) {
-            precision = Math.max(techPrecision, pricePrecision)
-          } else {
-            precision = pricePrecision
-          }
-        } else {
-          precision = techPrecision
-        }
-      }
-      let valueText = formatPrecision(this.getRange().to, precision)
-      if (shouldFormatBigNumber) {
-        valueText = customApi.formatBigNumber(valueText)
-      }
-      valueText = formatFoldDecimal(valueText, chartStore.getDecimalFoldThreshold())
-      crosshairVerticalTextWidth += (
-        crosshairStyles.horizontal.text.paddingLeft +
-        crosshairStyles.horizontal.text.paddingRight +
-        crosshairStyles.horizontal.text.borderSize * 2 +
-        calcTextWidth(
-          valueText,
-          crosshairStyles.horizontal.text.size,
-          crosshairStyles.horizontal.text.weight,
-          crosshairStyles.horizontal.text.family
-        )
-      )
-    }
-    return Math.max(yAxisWidth, crosshairVerticalTextWidth)
+    return yAxisWidth
+    // disable adding crosshair label width because it make the axis too wide
+    // const crosshairStyles = styles.crosshair
+    // let crosshairVerticalTextWidth = 0
+    // if (
+    //   crosshairStyles.show &&
+    //   crosshairStyles.horizontal.show &&
+    //   crosshairStyles.horizontal.text.show
+    // ) {
+    //   const indicators = chartStore.getIndicatorStore().getInstances(pane.getId())
+    //   let techPrecision = 0
+    //   let shouldFormatBigNumber = false
+    //   indicators.forEach(tech => {
+    //     techPrecision = Math.max(tech.precision, techPrecision)
+    //     if (!shouldFormatBigNumber) {
+    //       shouldFormatBigNumber = tech.shouldFormatBigNumber
+    //     }
+    //   })
+    //   let precision = 2
+    //   if (this.getType() !== YAxisType.Percentage) {
+    //     if (this.isInCandle()) {
+    //       const { price: pricePrecision } = chartStore.getPrecision()
+    //       const lastValueMarkStyles = styles.indicator.lastValueMark
+    //       if (lastValueMarkStyles.show && lastValueMarkStyles.text.show) {
+    //         precision = Math.max(techPrecision, pricePrecision)
+    //       } else {
+    //         precision = pricePrecision
+    //       }
+    //     } else {
+    //       precision = techPrecision
+    //   }
+    //   let valueText = formatPrecision(this.getRange().to, precision)
+    //   if (shouldFormatBigNumber) {
+    //     valueText = customApi.formatBigNumber(valueText)
+    //   }
+    //   valueText = formatFoldDecimal(valueText, chartStore.getDecimalFoldThreshold())
+    //   crosshairVerticalTextWidth += (
+    //     crosshairStyles.horizontal.text.paddingLeft +
+    //     crosshairStyles.horizontal.text.paddingRight +
+    //     crosshairStyles.horizontal.text.borderSize * 2 +
+    //     calcTextWidth(
+    //       valueText,
+    //       crosshairStyles.horizontal.text.size,
+    //       crosshairStyles.horizontal.text.weight,
+    //       crosshairStyles.horizontal.text.family
+    //     )
+    //   )
+    // }
+    // return Math.max(yAxisWidth, crosshairVerticalTextWidth)
   }
 
   getSelfBounding (): Bounding {
