@@ -334,6 +334,8 @@ export default abstract class YAxisImp extends AxisImp implements YAxis {
         yAxisWidth += (yAxisStyles.tickText.marginStart + yAxisStyles.tickText.marginEnd + textWidth)
       }
     }
+    return yAxisWidth
+    // disable adding crosshair label width because it make the axis too wide
     const crosshairStyles = styles.crosshair
     let crosshairVerticalTextWidth = 0
     if (
