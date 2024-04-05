@@ -1006,9 +1006,10 @@ export default class ChartImp implements Chart {
     this._chartStore.getActionStore().unsubscribe(type, callback)
   }
 
-  getConvertPictureUrl (includeOverlay?: boolean, type?: string, backgroundColor?: string): string {
-    const width = this._chartContainer.clientWidth
+  getConvertPictureUrl (includeOverlay?: boolean, type?: string, backgroundColor?: string, x1?: number, x2?: number): string {
+    const width = x1 === undefined ? this._chartContainer.clientWidth : x2 - x1;
     const height = this._chartContainer.clientHeight
+
     const canvas = createDom('canvas', {
       width: `${width}px`,
       height: `${height}px`,
@@ -1027,15 +1028,19 @@ export default class ChartImp implements Chart {
       const separatorPane = this._separatorPanes.get(pane)
       if (isValid(separatorPane)) {
         const separatorBounding = separatorPane.getBounding()
+        console.log('sep', separatorPane.left, separatorPane.top, separatorPane.width, separatorPane.height)
         ctx.drawImage(
           separatorPane.getImage(overlayFlag),
-          separatorBounding.left, separatorBounding.top, separatorBounding.width, separatorBounding.height
+          x1 ?? separatorBounding.left, separatorBounding.top, x1 ? width : separatorBounding.width, separatorBounding.height,
+          0, 0, x1 ? width : separatorBounding.width, separatorBounding.height
         )
       }
 
       const bounding = pane.getBounding()
+      console.log('bounding', bounding.left, bounding.top, bounding.width, bounding.height)
       ctx.drawImage(
         pane.getImage(overlayFlag),
+        x1 ?? 0, 0, width, bounding.height,
         0, bounding.top, width, bounding.height
       )
     })
