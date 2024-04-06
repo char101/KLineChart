@@ -290,7 +290,8 @@ export default class CandleTooltipView extends IndicatorTooltipView {
         rectHeight += (rectBorderSize * 2 + rectPaddingTop + rectPaddingBottom)
         const centerX = bounding.width / 2
         const isPointer = rectPosition === CandleTooltipRectPosition.Pointer && crosshair.paneId === PaneIdConstants.CANDLE
-        const isLeft = (crosshair.realX ?? 0) > centerX
+        // show tooltip always on the left side
+        const isLeft = true // (crosshair.realX ?? 0) > centerX
         let rectX: number = 0
         if (isPointer) {
           const realX = crosshair.realX!
