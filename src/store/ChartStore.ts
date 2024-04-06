@@ -244,19 +244,19 @@ export default class ChartStore {
         case LoadDataType.Init: {
           this.clear()
           this._dataList = data
-          this._forwardMore = more ?? true
+          this._backwardMore = more ?? true
           this._timeScaleStore.resetOffsetRightDistance()
           adjustFlag = true
           break
         }
         case LoadDataType.Backward: {
-          this._dataList = this._dataList.concat(data)
+          this._dataList = data.concat(this._dataList)
           this._backwardMore = more ?? false
           adjustFlag = dataLengthChange > 0
           break
         }
         case LoadDataType.Forward: {
-          this._dataList = data.concat(this._dataList)
+          this._dataList = this._dataList.concat(data)
           this._forwardMore = more ?? false
           adjustFlag = dataLengthChange > 0
         }

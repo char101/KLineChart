@@ -194,13 +194,13 @@ export default class TimeScaleStore {
       const firstData = dataList[0]
       this._chartStore.executeLoadMoreCallback(firstData?.timestamp ?? null)
       this._chartStore.executeLoadDataCallback({
-        type: LoadDataType.Forward,
+        type: LoadDataType.Backward,
         data: firstData ?? null
       })
     }
     if (to === totalBarCount) {
       this._chartStore.executeLoadDataCallback({
-        type: LoadDataType.Backward,
+        type: LoadDataType.Forward,
         data: dataList[totalBarCount - 1] ?? null
       })
     }
