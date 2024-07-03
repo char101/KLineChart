@@ -162,7 +162,7 @@ export default class ChartImp implements Chart {
       width: '100%',
       outline: 'none',
       borderStyle: 'none',
-      cursor: 'crosshair',
+      // cursor: 'crosshair',
       boxSizing: 'border-box',
       userSelect: 'none',
       webkitUserSelect: 'none',
